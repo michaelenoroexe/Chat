@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Server
 {
@@ -15,6 +16,8 @@ namespace Server
         {
             // Preparing sockets to listen 
             var listener = new TcpListener(IPAddress.Loopback, 5567);
+
+            var keyBuff = new byte[4];
             
             //Listening begins
             listener.Start();
@@ -22,10 +25,25 @@ namespace Server
             {
                 Console.WriteLine("Ожидание подключений... ");
 
-                // получаем входящее подключение
+                // Receiving connection
                 TcpClient client = listener.AcceptTcpClient();
 
-                client.Client.RemoteEndPoint?.Serialize();
+                //client.Client.RemoteEndPoint?.Serialize();
+                try
+                {
+                    using (var stream = client.GetStream())
+                    {
+                        stream.Read(keyBuff, 0, keyBuff.Length);
+
+                        Console.WriteLine(stream.ToString());
+
+                        Console.WriteLine(Encoding.Unicode.GetString(keyBuff));
+                    }
+                }
+                catch (ArgumentNullException)
+                {
+                    Console.WriteLine("Empty key string");
+                }
             }
         }
     }
