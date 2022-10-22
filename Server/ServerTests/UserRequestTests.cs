@@ -65,7 +65,7 @@ namespace ServerTests
             // Create instance of UserRequest with private constructor
             var userRequest = Activator.CreateInstance(userRequestType, BindingFlags.Instance | BindingFlags.NonPublic, null, null, null);
             // Get tested property
-            PropertyInfo sendedText = userRequestType.GetProperty("SendedText")!;
+            PropertyInfo sendedText = userRequestType.GetProperty("SendedTextString")!;
             
             // Act
             var res = (string)sendedText.GetValue(userRequest)!;
@@ -81,7 +81,7 @@ namespace ServerTests
             // Create instance of UserRequest with private constructor
             var userRequest = Activator.CreateInstance(userRequestType, BindingFlags.Instance | BindingFlags.NonPublic, null, null, null);
             // Get tested property
-            PropertyInfo sendedText = userRequestType.GetProperty("SendedText")!;
+            PropertyInfo sendedText = userRequestType.GetProperty("SendedTextString")!;
             // Get body stream field
             FieldInfo strBody = userRequestType.GetField("_reqBody", BindingFlags.Instance | BindingFlags.NonPublic)!;
             // Get body stream length field
