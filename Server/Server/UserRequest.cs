@@ -63,6 +63,23 @@ namespace Server
                 return Encoding.Unicode.GetString(text, 4, text.Length - 4);
             }
         }
+        /// <summary>
+        /// Return client request body byte arr
+        /// </summary>
+        public byte[] SendedTextBytes
+        {
+            get
+            {
+                // if request body is null user dont send any text
+                if (_reqBody == null) return null;
+
+                var text = new byte[_userBodyLength];
+
+                _reqBody.Read(text, 0, text.Length - 1);
+
+                return text.Skip(4).ToArray();
+            }
+        }
         // Private constructor for tests only
         private UserRequest() { }
         public UserRequest(TcpClient req)

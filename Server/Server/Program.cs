@@ -31,9 +31,11 @@ namespace Server
 
                 if (_connStrings.TryGetValue(client.ConnectionKey, out Connection? connect))
                 {
-                    sender.Connect((client.IP == connect.FirstUser) ? connect.SecondUser : connect.FirstUser, 5567); 
-                    //sender.Se
+                    sender.SendToAsync(client.SendedTextBytes, SocketFlags.None, new IPEndPoint(client.IP, 5567));
                 }
+                // TODO Checking queue for available connctions
+                // TODO Creating connection between two users
+                // TODO Set user to queue if pool is empty
             }
         }
     }

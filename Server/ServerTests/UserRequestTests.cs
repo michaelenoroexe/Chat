@@ -58,8 +58,9 @@ namespace ServerTests
             // Assert
             Assert.AreEqual(key, res);
         }
+
         [Test]
-        public void SendedTextOnEmptyRequestBodyShouldReturnBlankString()
+        public void SendedTextStrOnEmptyRequestBodyShouldReturnBlankString()
         {
             // Arrange
             // Create instance of UserRequest with private constructor
@@ -75,7 +76,7 @@ namespace ServerTests
         }
         [Test]
         [TestCase(525435, "Oh, hi")]
-        public void SendedTextOnCorrectBodyShouldReturnStringBody(int key, string text)
+        public void SendedTextStrOnCorrectBodyShouldReturnStringBody(int key, string text)
         {
             // Arrange
             // Create instance of UserRequest with private constructor
@@ -98,6 +99,33 @@ namespace ServerTests
 
             // Assert
             Assert.AreEqual(text, res);
+        }
+
+        [Test]
+        [TestCase(525435, "Oh, hi")]
+        public void SendedTextBytOnCorrectBodyShouldReturnStringBody(int key, string text)
+        {
+            // Arrange
+            // Create instance of UserRequest with private constructor
+            var userRequest = Activator.CreateInstance(userRequestType, BindingFlags.Instance | BindingFlags.NonPublic, null, null, null);
+            // Get tested property
+            PropertyInfo sendedText = userRequestType.GetProperty("SendedTextBytes")!;
+            // Get body stream field
+            FieldInfo strBody = userRequestType.GetField("_reqBody", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            // Get body stream length field
+            FieldInfo strBodyLen = userRequestType.GetField("_userBodyLength", BindingFlags.Instance | BindingFlags.NonPublic)!;
+            // Fill Request body with data in format key[4 byte] + string data
+            var stream = new MemoryStream();
+            WriteConnKeyAndValueToStream(stream, key, text);
+
+            strBody.SetValue(userRequest, stream);
+            strBodyLen.SetValue(userRequest, (int)stream.Length);
+
+            // Act
+            var res = (byte[])sendedText.GetValue(userRequest)!;
+
+            // Assert
+            Assert.AreEqual(text, Encoding.Unicode.GetString(res, 0, res.Length));
         }
     }
 }
