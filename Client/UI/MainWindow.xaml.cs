@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net;
+using System.Net.Sockets;
 
 namespace UI
 {
@@ -23,6 +25,23 @@ namespace UI
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ConnectToServer();
+        }
+
+        private async Task ConnectToServer()
+        {
+            TcpClient tcpClient = new TcpClient();
+
+            tcpClient.Connect(IPAddress.Loopback, 5567);
+
+            using (var stream = tcpClient.GetStream())
+            {
+                stream.WriteByte((byte)194);
+            }
         }
     }
 }
