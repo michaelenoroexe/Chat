@@ -16,7 +16,7 @@ namespace Server
         {
             // Preparing sockets to listen 
             var listener = new TcpListener(IPAddress.Loopback, 5567);
-
+            var sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var keyBuff = new byte[4];
             
             //Listening begins
@@ -26,23 +26,13 @@ namespace Server
                 Console.WriteLine("Ожидание подключений... ");
 
                 // Receiving connection
-                TcpClient client = listener.AcceptTcpClient();
+                TcpClient c = listener.AcceptTcpClient();
+                UserRequest client = new UserRequest(c);
 
-                //client.Client.RemoteEndPoint?.Serialize();
-                try
+                if (_connStrings.TryGetValue(client.ConnectionKey, out Connection? connect))
                 {
-                    using (var stream = client.GetStream())
-                    {
-                        stream.Read(keyBuff, 0, keyBuff.Length);
-
-                        Console.WriteLine(stream.ToString());
-
-                        Console.WriteLine(Encoding.Unicode.GetString(keyBuff));
-                    }
-                }
-                catch (ArgumentNullException)
-                {
-                    Console.WriteLine("Empty key string");
+                    sender.Connect((client.IP == connect.FirstUser) ? connect.SecondUser : connect.FirstUser, 5567); 
+                    //sender.Se
                 }
             }
         }

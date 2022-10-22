@@ -14,6 +14,8 @@ namespace Server
         private readonly Stream _reqBody;
         private readonly int _userBodyLength;
         private bool disposedValue;
+        // Cached connection key
+        private int _connKey = -1;
         /// <summary>
         /// Return IP of client that make this request
         /// </summary>
@@ -31,6 +33,7 @@ namespace Server
         {
             get
             {
+                if (_connKey != -1) return _connKey;
                 // if request body is null user dont have connection key
                 if (_reqBody == null) return -1;
 
@@ -38,13 +41,15 @@ namespace Server
 
                 _reqBody.Read(key, 0, 4);
 
-                return BitConverter.ToInt32(key);
+                _connKey = BitConverter.ToInt32(key);
+
+                return _connKey;
             }
         }
         /// <summary>
-        /// Return client request body
+        /// Return client request body string
         /// </summary>
-        public string SendedText
+        public string SendedTextString
         {
             get
             {
