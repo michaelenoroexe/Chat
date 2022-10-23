@@ -14,22 +14,30 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IDisposable   
     {
+        Stream? stream = null;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        public void Dispose()
+        {
+            stream.Dispose();
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ConnectToServer();
+            Task.Run(ConnectToServer);
         }
 
         private async Task ConnectToServer()
@@ -39,6 +47,10 @@ namespace UI
             try
             {
                 tcpClient.Connect(IPAddress.Loopback, 5567);
+                stream = tcpClient.GetStream();
+                // Byte to make server add users connection
+                stream.WriteByte((byte)194);
+
                 Connect.Visibility = Visibility.Hidden;
                 Send.Visibility = Visibility.Visible;
             }
