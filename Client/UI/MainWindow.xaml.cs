@@ -35,12 +35,27 @@ namespace UI
         private async Task ConnectToServer()
         {
             TcpClient tcpClient = new TcpClient();
-            tcpClient.Connect(IPAddress.Loopback, 5567); ;
 
-            using (var stream = tcpClient.GetStream())
+            try
             {
-                stream.WriteByte((byte)194);
+                tcpClient.Connect(IPAddress.Loopback, 5567);
+                Connect.Visibility = Visibility.Hidden;
+                Send.Visibility = Visibility.Visible;
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        private async Task SendMessage()
+        {
+            //using (var stream = tcpClient.GetStream())
+            //{
+            //    stream.WriteByte((byte)194);
+            //}
         }
     }
 }
