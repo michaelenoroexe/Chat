@@ -12,7 +12,6 @@ namespace Server
     {
         private readonly TcpClient _request;
         private readonly Stream _reqBody;
-        private readonly int _userBodyLength;
         private bool disposedValue;
         // Cached connection key
         private int _connKey = -1;
@@ -53,14 +52,20 @@ namespace Server
         {
             get
             {
+                var len = 0;
                 // if request body is null user dont send any text
                 if (_reqBody == null) return "";
 
-                var text = new byte[_userBodyLength];
+                var text = new byte[1000];
 
                 _reqBody.Read(text, 0, text.Length-1);
 
-                return Encoding.Unicode.GetString(text, 4, text.Length - 4);
+                for (int i = 4; i < text.Length; i++)
+                {
+                    if (text[i] == 0 && text[i - 1] == 0) { len = i - 2; break; }
+                }
+
+                return Encoding.Unicode.GetString(text, 4, len-2);
             }
         }
         /// <summary>
@@ -70,14 +75,20 @@ namespace Server
         {
             get
             {
+                var len = 0;
                 // if request body is null user dont send any text
                 if (_reqBody == null) return null;
 
-                var text = new byte[_userBodyLength];
+                var text = new byte[1000];
 
                 _reqBody.Read(text, 0, text.Length - 1);
 
-                return text.Skip(4).ToArray();
+                for (int i = 4; i < text.Length; i++)
+                {
+                    if (text[i] == 0 && text[i - 1] == 0) { len = i - 2; break; }
+                }
+
+                return text.Skip(4).Take(len-2).ToArray();
             }
         }
         // Private constructor for tests only
@@ -86,7 +97,6 @@ namespace Server
         {
             _request = req;
             _reqBody = _request.GetStream();
-            _userBodyLength = (int)_reqBody.Length;
         }
 
         private void Dispose(bool disposing)

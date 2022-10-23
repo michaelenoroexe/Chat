@@ -50,7 +50,6 @@ namespace ServerTests
             WriteConnKeyAndValueToStream(stream, key, text);
 
             strBody.SetValue(userRequest, stream);
-            strBodyLen.SetValue(userRequest, (int)stream.Length);
 
             // Act
             var res = (int)sendedText.GetValue(userRequest)!;
@@ -92,7 +91,6 @@ namespace ServerTests
             WriteConnKeyAndValueToStream(stream, key, text);
 
             strBody.SetValue(userRequest, stream);
-            strBodyLen.SetValue(userRequest, (int)stream.Length);
 
             // Act
             var res = (string)sendedText.GetValue(userRequest)!;
@@ -119,7 +117,6 @@ namespace ServerTests
             WriteConnKeyAndValueToStream(stream, key, text);
 
             strBody.SetValue(userRequest, stream);
-            strBodyLen.SetValue(userRequest, (int)stream.Length);
 
             // Act
             var res = (byte[])sendedText.GetValue(userRequest)!;

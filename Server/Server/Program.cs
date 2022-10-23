@@ -37,12 +37,16 @@ namespace Server
                     Console.WriteLine("Resend Data");
                     continue;
                 }
+                // Return if client already in queue
+                if (_reqQueue.Peek().GetHashCode() == client.IP.GetHashCode()) continue;
+                //Create connection and send in to clients
                 if (_reqQueue.Any())
                 {
                     RegisterConnection(_reqQueue.Dequeue(), client.IP);
                     Console.WriteLine("Get from queue");
                     continue;
                 }
+                //Add new client to queue
                 _reqQueue.Enqueue(client.IP);
                 Console.WriteLine("Set to queue");
             }
