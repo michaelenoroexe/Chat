@@ -117,5 +117,25 @@ namespace Server
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        public static explicit operator TcpClient(UserRequest re)
+        {
+            return re._request;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.IP.GetHashCode();
+        }
+        public bool Equals(UserRequest req)
+        {
+            return req.GetHashCode() == this.GetHashCode();
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) return false;
+            if (obj.GetType() != typeof(UserRequest)) return false;
+            return this.Equals((UserRequest)obj);
+        }
     }
 }

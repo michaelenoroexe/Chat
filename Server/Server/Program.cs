@@ -8,11 +8,9 @@ namespace Server
 {
     class Program
     {
-        private static Queue<IPAddress> _reqQueue = new Queue<IPAddress>();
+        private static Queue<UserRequest> _reqQueue = new Queue<UserRequest>();
 
         private static Dictionary<int, Connection> _connStrings = new Dictionary<int, Connection>();
-
-        private static Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         static void Main(string[] args)
         {
@@ -33,35 +31,33 @@ namespace Server
 
                 if (_connStrings.TryGetValue(client.ConnectionKey, out Connection? connect))
                 {
-                    sender.SendToAsync(client.SendedTextBytes, SocketFlags.None, new IPEndPoint(client.IP, 5567));
+                    connect.Send(client);
                     Console.WriteLine("Resend Data");
                     continue;
-                }
-                // Return if client already in queue
-                if (_reqQueue.Peek().GetHashCode() == client.IP.GetHashCode()) continue;
+                }                
                 //Create connection and send in to clients
                 if (_reqQueue.Any())
                 {
-                    RegisterConnection(_reqQueue.Dequeue(), client.IP);
+                    // Return if client already in queue
+                    if (_reqQueue.Peek().GetHashCode() == client.GetHashCode()) continue;
+
+                    RegisterConnection(_reqQueue.Dequeue(), client);
                     Console.WriteLine("Get from queue");
                     continue;
                 }
                 //Add new client to queue
-                _reqQueue.Enqueue(client.IP);
+                _reqQueue.Enqueue(client);
                 Console.WriteLine("Set to queue");
             }
         }
 
-        private static async Task RegisterConnection(IPAddress firstUser, IPAddress secondUser)
+        private static async Task RegisterConnection(UserRequest firstUser, UserRequest secondUser)
         {
             var con = new Connection(firstUser, secondUser);
 
             _connStrings.Add(con.GetHashCode(), con);
-            var sendUs1 = sender.SendToAsync(BitConverter.GetBytes(con.GetHashCode()), SocketFlags.None, new IPEndPoint(firstUser, 5567));
-            var sendUs2 = sender.SendToAsync(BitConverter.GetBytes(con.GetHashCode()), SocketFlags.None, new IPEndPoint(secondUser, 5567));
-
-            await sendUs1;
-            await sendUs2;
+            //firstUser.GetStream().Write(BitConverter.GetBytes(con.GetHashCode()));
+            //secondUser.GetStream().Write(BitConverter.GetBytes(con.GetHashCode()));
         }
     }
 }

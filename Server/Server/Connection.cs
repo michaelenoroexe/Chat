@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,23 +13,29 @@ namespace Server
         /// <summary>
         /// IP adress of first user in connection
         /// </summary>
-        public IPAddress FirstUser { get; }
+        public UserRequest FirstUser { get; }
         /// <summary>
         /// IP adress of second user in connection
         /// </summary>
-        public IPAddress SecondUser { get; }
+        public UserRequest SecondUser { get; }
 
-        public Connection(IPAddress firstUser, IPAddress secondUser)
+        public Connection(UserRequest firstUser, UserRequest secondUser)
         {
             FirstUser = firstUser;
 
             SecondUser = secondUser;
         }
-        public Connection(string firstUser, string secondUser)
-        {
-            FirstUser = IPAddress.Parse(firstUser);
 
-            SecondUser = IPAddress.Parse(secondUser);
+        public void Send(UserRequest client)
+        {
+            if (client == FirstUser)
+            {
+                ((TcpClient)SecondUser).GetStream().Write(client.SendedTextBytes);
+            }
+            else
+            {
+                ((TcpClient)FirstUser).GetStream().Write(client.SendedTextBytes);
+            }
         }
 
         /// <summary>
@@ -38,7 +45,7 @@ namespace Server
         /// <returns></returns>
         public bool Equals(Connection con)
         {
-            return FirstUser == con.FirstUser && SecondUser == con.SecondUser;
+            return this.GetHashCode() == con.GetHashCode() && SecondUser == con.SecondUser;
         }
         public override bool Equals(object? obj)
         {
@@ -48,7 +55,7 @@ namespace Server
         }
         public override int GetHashCode()
         {
-            return FirstUser.GetHashCode() + SecondUser.GetHashCode();
+            return FirstUser.IP.ToString().GetHashCode() + SecondUser.IP.ToString().GetHashCode();
         }
     }
 }
