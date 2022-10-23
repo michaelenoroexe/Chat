@@ -9,8 +9,6 @@
     <Grid>
         <Button Content="Connect" HorizontalAlignment="Left" Margin="49,44,0,0" VerticalAlignment="Top" Click="Button_Click"/>
         <ListBox HorizontalAlignment="Left" Height="380" Margin="209,44,0,0" VerticalAlignment="Top" Width="581" d:ItemsSource="{d:SampleData ItemCount=5}"/>
-        <TextBox x:Name="IP" HorizontalAlignment="Left" Margin="34,113,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="34,94,0,0" TextWrapping="Wrap" Text="IP" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

@@ -35,11 +35,7 @@ namespace UI
         private async Task ConnectToServer()
         {
             TcpClient tcpClient = new TcpClient();
-            // 2ip 188.190.221.175
-            // radmin 
-            //tcpClient.Connect(IPAddress.Loopback, 5567);
-
-            tcpClient.Connect(IPAddress.Parse(IP.Text), 5567); ;
+            tcpClient.Connect(IPAddress.Loopback, 5567); ;
 
             using (var stream = tcpClient.GetStream())
             {
