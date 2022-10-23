@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using System.Configuration;
 
 namespace UI
 {
@@ -23,11 +24,15 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window, IDisposable   
     {
-        Stream? stream = null;
+        private Stream? stream = null;
+
+        private int connkey = -1;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Listener(CWind.Items.Add);
         }
 
         public void Dispose()
@@ -35,9 +40,12 @@ namespace UI
             stream.Dispose();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(ConnectToServer);
+            await Task.Run(ConnectToServer);
+
+            Connect.Visibility = Visibility.Hidden;
+            Send.Visibility = Visibility.Visible;
         }
 
         private async Task ConnectToServer()
@@ -46,13 +54,11 @@ namespace UI
 
             try
             {
-                tcpClient.Connect(IPAddress.Loopback, 5567);
+                tcpClient.Connect(IPAddress.Parse(ConfigurationManager.AppSettings["Server"]), 5567);
                 stream = tcpClient.GetStream();
                 // Byte to make server add users connection
                 stream.WriteByte((byte)194);
 
-                Connect.Visibility = Visibility.Hidden;
-                Send.Visibility = Visibility.Visible;
             }
             catch (Exception)
             {
@@ -68,6 +74,13 @@ namespace UI
             //{
             //    stream.WriteByte((byte)194);
             //}
+        }
+
+        private async Task Listener(Func<object, int> act)
+        {
+            TcpListener tcplist = new TcpListener(IPAddress.Parse(ConfigurationManager.AppSettings["Server"]), 5567);
+
+            
         }
     }
 }
