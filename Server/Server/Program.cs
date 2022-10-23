@@ -33,14 +33,17 @@ namespace Server
                 if (_connStrings.TryGetValue(client.ConnectionKey, out Connection? connect))
                 {
                     sender.SendToAsync(client.SendedTextBytes, SocketFlags.None, new IPEndPoint(client.IP, 5567));
+                    Console.WriteLine("Resend Data");
                     continue;
                 }
                 if (_reqQueue.Any())
                 {
                     RegisterConnection(_reqQueue.Dequeue(), client.IP);
+                    Console.WriteLine("Get from queue");
                     continue;
                 }
                 _reqQueue.Enqueue(client.IP);
+                Console.WriteLine("Set to queue");
             }
         }
 
