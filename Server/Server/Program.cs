@@ -17,7 +17,8 @@ namespace Server
         static void Main(string[] args)
         {
             // Preparing sockets to listen 
-            var listener = new TcpListener(IPAddress.Loopback, 5567);
+            var listener = new TcpListener(IPAddress.Any, 5567);
+            
             var keyBuff = new byte[4];
             
             //Listening begins
