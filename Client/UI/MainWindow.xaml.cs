@@ -24,40 +24,52 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window, IDisposable   
     {
-        private Stream? stream = null;
+        private TcpClient tcpClient = null;
+
+        private Task list;
 
         private int connkey = -1;
+
+        private object block = new object();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            Listener(CWind.Items.Add);
+           
         }
 
         public void Dispose()
         {
-            stream.Dispose();
+            tcpClient.Dispose();
+            list.Dispose();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void Con(object sender, RoutedEventArgs e)
         {
             await Task.Run(ConnectToServer);
-
             Connect.Visibility = Visibility.Hidden;
             Send.Visibility = Visibility.Visible;
+            list = Task.Run(Listener);
+        }
+
+        private void Sen(object sender, RoutedEventArgs e)
+        {
+            SendMessage();
         }
 
         private async Task ConnectToServer()
         {
-            TcpClient tcpClient = new TcpClient();
+            tcpClient = new TcpClient();
 
             try
             {
                 tcpClient.Connect(IPAddress.Parse(ConfigurationManager.AppSettings["Server"]), 5567);
-                stream = tcpClient.GetStream();
                 // Byte to make server add users connection
-                stream.WriteByte((byte)194);
+                var a = new StreamWriter(tcpClient.GetStream());
+
+                a.WriteLine("AAAAAAAAA");
+
+                a.Flush();
 
             }
             catch (Exception)
@@ -68,19 +80,37 @@ namespace UI
 
         }
 
-        private async Task SendMessage()
+        private void SendMessage()
         {
-            //using (var stream = tcpClient.GetStream())
-            //{
-            //    stream.WriteByte((byte)194);
-            //}
+            var at = new StreamWriter(tcpClient.GetStream());
+            at.WriteLine(Message.Text);
+            at.Flush();
+            tcpClient.GetStream().Flush();         
         }
 
-        private async Task Listener(Func<object, int> act)
+        private async Task Listener()
         {
-            TcpListener tcplist = new TcpListener(IPAddress.Parse(ConfigurationManager.AppSettings["Server"]), 5567);
+            //TcpListener list = new TcpListener(IPAddress.Parse(ConfigurationManager.AppSettings["Server"]), 5567);
+            //list.Start();
+            string? st;
+            while (true)
+            {
+                st = new StreamReader(tcpClient.GetStream())?.ReadLine();
+                tcpClient.GetStream().Flush();
 
-            
+                if (st is not null)
+                {
+                    
+                    Dispatcher.Invoke(() => AddToList(st));
+
+                }
+                //TcpClient c = listener.AcceptTcpClient();
+            } 
+        }
+
+        private void AddToList(string st)
+        {
+            CWind.Items.Add(st);
         }
     }
 }
