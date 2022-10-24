@@ -23,18 +23,62 @@ namespace Server
         {
             FirstUser = firstUser;
 
-            SecondUser = secondUser;
-        }
+            //SecondUser = secondUser;
 
+            SecondUser = firstUser;
+            Task.Run(() => { Thread.Sleep(3000); var s = new StreamWriter((Stream)FirstUser); s.WriteLine("ooooooh, hhhhhi"); s.Flush(); });
+            Task.Run(Brodcast);
+        }
+        // Mediator pattren sender
         public void Send(UserRequest client)
         {
             if (client == FirstUser)
             {
-                ((TcpClient)SecondUser).GetStream().Write(client.SendedTextBytes);
+                Console.WriteLine(client.SendedTextString);
+                var ssw = new StreamWriter(((Stream)SecondUser));
+                ssw.WriteLine(new StreamReader((Stream)client).ReadLine());
+                ssw.Flush();
+                ((Stream)SecondUser).Flush();
             }
             else
             {
-                ((TcpClient)FirstUser).GetStream().Write(client.SendedTextBytes);
+                ((Stream)FirstUser).Write(client.SendedTextBytes);
+                ((Stream)FirstUser).Flush();
+            }
+        }
+        /// <summary>
+        /// Brodcast messages between users
+        /// </summary>
+        /// <returns></returns>
+        public async void Brodcast()
+        {
+            var t1 = Task.Run(() => Brodcast(FirstUser));
+            var t2 = Task.Run(() => Brodcast(SecondUser));
+
+            Task.WaitAll(t1, t2);
+        }
+        //Read user stream and send to anouther user
+        private async void Brodcast(UserRequest ur)
+        {
+            StreamReader sr = null;
+            try
+            {
+                string? res ;
+                sr = new StreamReader((Stream)ur);
+                while (true)
+                {
+                    res = sr.ReadLine();
+                    Send(ur);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                sr?.Dispose();
+                ur.Dispose();
             }
         }
 

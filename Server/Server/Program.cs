@@ -10,7 +10,7 @@ namespace Server
     {
         private static Queue<UserRequest> _reqQueue = new Queue<UserRequest>();
 
-        private static Dictionary<int, Connection> _connStrings = new Dictionary<int, Connection>();
+        private static List<Connection> _connections = new List<Connection>();
 
         static void Main(string[] args)
         {
@@ -27,27 +27,29 @@ namespace Server
 
                 // Receiving connection
                 TcpClient c = listener.AcceptTcpClient();
+               
                 UserRequest client = new UserRequest(c);
 
-                if (_connStrings.TryGetValue(client.ConnectionKey, out Connection? connect))
-                {
-                    connect.Send(client);
-                    Console.WriteLine("Resend Data");
-                    continue;
-                }                
+                //if (_connections.TryGetValue(client.ConnectionKey, out Connection? connect))
+                //{
+                //    connect.Send(client);
+                //    Console.WriteLine("Resend Data");
+                //    continue;
+                //}                
                 //Create connection and send in to clients
-                if (_reqQueue.Any())
+//                if (_reqQueue.Any())
                 {
                     // Return if client already in queue
-                    if (_reqQueue.Peek().GetHashCode() == client.GetHashCode()) continue;
+                    //if (_reqQueue.Peek().GetHashCode() == client.GetHashCode()) continue;
 
-                    RegisterConnection(_reqQueue.Dequeue(), client);
+                    //RegisterConnection(_reqQueue.Dequeue(), client);
+                    RegisterConnection(client, null);
                     Console.WriteLine("Get from queue");
                     continue;
                 }
                 //Add new client to queue
-                _reqQueue.Enqueue(client);
-                Console.WriteLine("Set to queue");
+//                _reqQueue.Enqueue(client);
+//                Console.WriteLine("Set to queue");
             }
         }
 
@@ -55,7 +57,7 @@ namespace Server
         {
             var con = new Connection(firstUser, secondUser);
 
-            _connStrings.Add(con.GetHashCode(), con);
+            _connections.Add(con);
             //firstUser.GetStream().Write(BitConverter.GetBytes(con.GetHashCode()));
             //secondUser.GetStream().Write(BitConverter.GetBytes(con.GetHashCode()));
         }

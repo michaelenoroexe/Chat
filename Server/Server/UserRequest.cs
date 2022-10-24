@@ -26,26 +26,6 @@ namespace Server
             }
         }
         /// <summary>
-        /// Return Connection key writed by client
-        /// </summary>
-        public int ConnectionKey
-        {
-            get
-            {
-                if (_connKey != -1) return _connKey;
-                // if request body is null user dont have connection key
-                if (_reqBody == null) return -1;
-
-                var key = new byte[4];
-
-                _reqBody.Read(key, 0, 4);
-
-                _connKey = BitConverter.ToInt32(key);
-
-                return _connKey;
-            }
-        }
-        /// <summary>
         /// Return client request body string
         /// </summary>
         public string SendedTextString
@@ -60,12 +40,12 @@ namespace Server
 
                 _reqBody.Read(text, 0, text.Length-1);
 
-                for (int i = 4; i < text.Length; i++)
+                for (int i = 0; i < text.Length; i++)
                 {
                     if (text[i] == 0 && text[i - 1] == 0) { len = i - 2; break; }
                 }
 
-                return Encoding.Unicode.GetString(text, 4, len-2);
+                return Encoding.Unicode.GetString(text, 0, len);
             }
         }
         /// <summary>
@@ -83,13 +63,18 @@ namespace Server
 
                 _reqBody.Read(text, 0, text.Length - 1);
 
-                for (int i = 4; i < text.Length; i++)
+                for (int i = 0; i < text.Length; i++)
                 {
                     if (text[i] == 0 && text[i - 1] == 0) { len = i - 2; break; }
                 }
 
-                return text.Skip(4).Take(len-2).ToArray();
+                return text.Take(len).ToArray();
             }
+        }
+        public void Send(byte[] wr)
+        {
+            _reqBody.Flush();
+            _reqBody.Write(wr, 0, wr.Length);
         }
         // Private constructor for tests only
         private UserRequest() { }
@@ -121,6 +106,10 @@ namespace Server
         public static explicit operator TcpClient(UserRequest re)
         {
             return re._request;
+        }
+        public static explicit operator Stream(UserRequest re)
+        {
+            return re._reqBody;
         }
 
         public override int GetHashCode()
