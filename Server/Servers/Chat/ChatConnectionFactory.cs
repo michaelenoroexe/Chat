@@ -10,9 +10,9 @@ namespace Servers.Chat
     /// <summary>
     /// Class to create special to chat connections
     /// </summary>
-    internal class ChatConnectionFactory : ConnectionFactory
+    internal class ChatConnectionFactory : ConnectionFactory<string>
     {
-        public override IConnection SetConnection(IConnectUser firstUser, IConnectUser secondUser)
+        public override IConnection<string> SetConnection(IConnectUser<string> firstUser, IConnectUser<string> secondUser)
         {
             ChatConnect con = new ChatConnect(firstUser, secondUser);
 
@@ -24,26 +24,26 @@ namespace Servers.Chat
         /// <summary>
         /// Class, that objects creates ChatConnectionFactory
         /// </summary>
-        internal class ChatConnect : IConnection
+        internal class ChatConnect : IConnection<string>
         {
-            private IConnectUser firstUser;
-            private IConnectUser secondUser;
+            private IConnectUser<string> firstUser;
+            private IConnectUser<string> secondUser;
 
-            public ChatConnect(IConnectUser firstUser, IConnectUser secondUser)
+            public ChatConnect(IConnectUser<string> firstUser, IConnectUser<string> secondUser)
             {
                 this.firstUser = firstUser;
                 this.secondUser = secondUser;
             }
             // Send message to oposite user of connection
-            public void Send(string msg, IConnectUser user)
+            public void Send(string msg, IConnectUser<string> user)
             {
                 if (user == firstUser)
                 {
-                    secondUser.Send(msg);
+                    secondUser.Notify(msg);
                 }
                 else
                 {
-                    firstUser.Send(msg);
+                    firstUser.Notify(msg);
                 }
             }
         }

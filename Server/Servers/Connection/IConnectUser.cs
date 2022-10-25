@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Servers.Connection
 {
-    internal interface IConnectUser
+    internal interface IConnectUser<T>
     {
-        public void SetConnection(IConnection con);
+        public void SetConnection(IConnection<T> con);
 
-        public void Send(string message);
+        public void Notify(T message);
     }
 }

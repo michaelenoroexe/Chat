@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace Servers
 {
-    public interface IServer
+    public interface IServer : IDisposable
     {
+        /// <summary>
+        /// Start of server work
+        /// </summary>
         public void StartServer();
-
+        /// <summary>
+        /// Stop server
+        /// </summary>
         public void StopServer();
     }
 }
