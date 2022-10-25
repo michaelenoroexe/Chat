@@ -22,17 +22,18 @@ namespace Servers.Chat
         /// Accept all receiving requests to connect
         /// </summary>
         /// <returns></returns>
-        private void AcceptConnections()
+        private async Task AcceptConnections(CancellationToken token)
         {
             TcpClient client;
             ChatConnectionFactory connFactory = new ChatConnectionFactory();
             _listener.Start();
-            while (true)
+            while (!token.IsCancellationRequested)
             {
-                client = _listener.AcceptTcpClient();
-
+                client = await _listener.AcceptTcpClientAsync(token);
+                Console.WriteLine("Client accepted");
                 if (_waiting is not null)
                 {
+                    Console.WriteLine("CreateConnection");
                     _storage.Add(connFactory.SetConnection(new ChatUser(_waiting), new ChatUser(client)));
                     _waiting = null;
 
@@ -40,6 +41,7 @@ namespace Servers.Chat
                 }
                 // If no one dont wait to chat, make user wait
                 _waiting = client;
+                Console.WriteLine("Client in waitingroom");
             }
         }
         internal ChatServer()
@@ -47,8 +49,7 @@ namespace Servers.Chat
             _listener = new TcpListener(IPAddress.Any, 5567);
             _storage = new List<IConnection<string>>();
             _waiting = null;
-            _tokenSource = new CancellationTokenSource();
-            _acceptConnects = new Task(AcceptConnections);
+            _tokenSource = new CancellationTokenSource();  
         }
 
         /// <summary>
@@ -56,7 +57,8 @@ namespace Servers.Chat
         /// </summary>
         public void StartServer()
         {
-            _acceptConnects.Start();
+            Console.WriteLine("Server start");
+            _acceptConnects = AcceptConnections(_tokenSource.Token);
         }
         /// <summary>
         /// Dispose server resources
@@ -72,10 +74,9 @@ namespace Servers.Chat
             {
                 if (disposing)
                 {
-                    _tokenSource.Cancel();
-                    _tokenSource.Dispose();
-                    _acceptConnects.Dispose();
+                    _tokenSource.Cancel();                                    
                     _listener.Stop();
+                    _tokenSource.Dispose();
                 }
 
                 _storage = null!;
