@@ -14,7 +14,7 @@ namespace Servers.Chat
         private TcpClient? _waiting;
         private TcpListener _listener;
         private List<IConnection<string>> _storage;
-        private Task _acceptConnects;
+        private Task? _acceptConnects;
         private CancellationTokenSource _tokenSource;
         private bool _disposedValue;
 

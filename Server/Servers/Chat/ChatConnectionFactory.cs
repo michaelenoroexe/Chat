@@ -10,9 +10,9 @@ namespace Servers.Chat
     /// <summary>
     /// Class to create special to chat connections
     /// </summary>
-    internal class ChatConnectionFactory : ConnectionFactory<string>
+    internal class ChatConnectionFactory : IConnectionFactory<string>
     {
-        public override IConnection<string> SetConnection(IConnectUser<string> firstUser, IConnectUser<string> secondUser)
+        public IConnection<string> SetConnection(IConnectUser<string> firstUser, IConnectUser<string> secondUser)
         {
             ChatConnect con = new ChatConnect(firstUser, secondUser);
 
