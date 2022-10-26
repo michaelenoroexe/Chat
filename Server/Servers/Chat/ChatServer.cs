@@ -14,9 +14,8 @@ namespace Servers.Chat
         private bool _disposedValue;
 
         /// <summary>
-        /// Accept all receiving requests to connect
+        /// Accept all receiving requests to connect.
         /// </summary>
-        /// <returns></returns>
         private async Task AcceptConnections(CancellationToken token)
         {
             TcpClient client;
@@ -34,7 +33,7 @@ namespace Servers.Chat
 
                     continue;
                 }
-                // If no one dont wait to chat, make user wait
+                // If no one dont wait to chat, make user wait.
                 _waiting = client;
                 Console.WriteLine("Client in waiting room");
             }
@@ -48,7 +47,7 @@ namespace Servers.Chat
         }
 
         /// <summary>
-        /// Start receive client connections
+        /// Start receive client connections.
         /// </summary>
         public void StartServer()
         {
@@ -56,7 +55,7 @@ namespace Servers.Chat
             _acceptConnects = AcceptConnections(_tokenSource.Token);
         }
         /// <summary>
-        /// Dispose server resources
+        /// Dispose server resources.
         /// </summary>
         public void StopServer()
         {
@@ -79,7 +78,9 @@ namespace Servers.Chat
                 _disposedValue = true;
             }
         }
-
+        /// <summary>
+        /// Dispose server resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);
