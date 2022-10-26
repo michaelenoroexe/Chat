@@ -8,7 +8,6 @@ namespace Servers.Chat
     /// </summary>
     internal sealed class ChatUser : ConnectUser<string>, IDisposable
     {
-        private TcpClient _tcpClient;
         private StreamWriter _messageWriter;
         private StreamReader _messageReader;
         private Task _listen;
@@ -30,9 +29,7 @@ namespace Servers.Chat
 
         internal ChatUser(TcpClient client)
         {
-            _tcpClient = client;
-
-            var userStream = _tcpClient.GetStream();
+            var userStream = client.GetStream();
 
             _messageWriter = new StreamWriter(userStream);
             _messageReader = new StreamReader(userStream);
@@ -59,13 +56,14 @@ namespace Servers.Chat
                     _listen.Dispose();
                     _messageReader.Dispose();
                     _messageWriter.Dispose();
-                    _tcpClient.Dispose();
                 }
 
                 _disposedValue = true;
             }
         }
-
+        /// <summary>
+        /// Dispose user resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);
