@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Servers.Connection
+﻿namespace Servers.Connection
 {
     /// <summary>
     /// Factory to create connection between two users
