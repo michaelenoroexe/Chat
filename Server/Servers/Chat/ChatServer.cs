@@ -28,7 +28,7 @@ namespace Servers.Chat
                 Console.WriteLine("Client accepted");
                 if (_waiting is not null)
                 {
-                    Console.WriteLine("CreateConnection");
+                    Console.WriteLine("Create Connection");
                     _storage.Add(connFactory.SetConnection(new ChatUser(_waiting), new ChatUser(client)));
                     _waiting = null;
 
@@ -36,7 +36,7 @@ namespace Servers.Chat
                 }
                 // If no one dont wait to chat, make user wait
                 _waiting = client;
-                Console.WriteLine("Client in waitingroom");
+                Console.WriteLine("Client in waiting room");
             }
         }
         internal ChatServer()

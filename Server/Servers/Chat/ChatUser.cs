@@ -4,7 +4,7 @@ using System.Net.Sockets;
 namespace Servers.Chat
 {
     /// <summary>
-    /// User of the chat server, can exchange data with linked user
+    /// User of the chat server, can exchange data with linked user.
     /// </summary>
     internal sealed class ChatUser : ConnectUser<string>, IDisposable
     {
@@ -15,7 +15,7 @@ namespace Servers.Chat
         private bool _disposedValue;
 
         /// <summary>
-        /// Listen on client inputed messages and send it to anouther client
+        /// Listen on client inputed messages and send it to anouther client.
         /// </summary>
         private void ListenRequests()
         {
@@ -28,7 +28,7 @@ namespace Servers.Chat
             }
         }
 
-        public ChatUser(TcpClient client)
+        internal ChatUser(TcpClient client)
         {
             _tcpClient = client;
 
@@ -40,9 +40,9 @@ namespace Servers.Chat
             _listen = Task.Run(ListenRequests);
         }
         /// <summary>
-        /// Send message to user
+        /// Send message to user.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message content.</param>
         public override void Notify(string message)
         {
             _messageWriter.WriteLine(message);
