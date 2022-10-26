@@ -51,6 +51,8 @@ namespace Servers.Chat
         public override void Notify(string message)
         {
             _messageWriter.WriteLine(message);
+            // Commit message to user stream.
+            _messageWriter.Flush();
         }
         #region Dispose
         private void Dispose(bool disposing)
