@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UI.Connect;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Configuration;
 
 namespace UI
 {
@@ -20,9 +9,35 @@ namespace UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ChatConnect? connect;
+        
         public MainWindow()
         {
             InitializeComponent();
+        }
+        /// <summary>
+        /// Connect to remoute host.
+        /// </summary>
+        private void Connect_Click(object sender, RoutedEventArgs e)
+        {
+            string serverIp = ConfigurationManager.AppSettings.Get("ServerIp")!;
+            int serverPort = int.Parse(ConfigurationManager.AppSettings.Get("ServerPort")!);
+
+            connect = new ChatConnect(serverIp, serverPort);
+
+            connect.MessageReceived += (s, e) => CWind.Items.Add(e.Message);
+
+            Connect.Visibility = Visibility.Hidden;
+            Send.Visibility = Visibility.Visible;
+        }
+        
+        private void Send_Click(object sender, RoutedEventArgs e)
+        {
+            string message = Message.Text;
+
+            connect!.Send(message);
+
+            Message.Text = "";
         }
     }
 }
