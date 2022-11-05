@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="MainWindow" Height="466" Width="800">
+    <StackPanel>
+        <ListBox x:Name="CWind" HorizontalAlignment="Center" Height="393" Margin="0,10,0,0" VerticalAlignment="Top" Width="780"/>
+        <StackPanel Orientation="Horizontal" Width="780">
+            <TextBox x:Name="Message" Height="21" TextWrapping="Wrap" Text="" Width="732"/>
+            <Grid Width="48" RenderTransformOrigin="0.5,0.5">
+                <Button x:Name="Connect" Content="Connect" VerticalAlignment="Center" Click="Connect_Click" HorizontalAlignment="Left" Width="48"/>
+                <Button x:Name="Send" Click="Send_Click" Visibility="Hidden" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="48"/>
+            </Grid>
+        </StackPanel>
+    </StackPanel>
 </Window>
